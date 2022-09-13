@@ -1,0 +1,73 @@
+#!/bin/bash
+#systemctl --user stop xdg-document-portal.service
+echo -n "Дaтa: "
+date
+
+echo -n "Имя учетной записи: "
+whoami
+
+echo -n "Доменное имя ПК: "
+hostname
+
+echo "Процессор:"
+echo -n " Модель — "
+lscpu | grep "Имя модели:" | awk '{print $3, $4, $5}'
+
+echo -n " Архитектура — "
+lscpu | grep "Архитектура" | awk '{print $2}'
+
+echo -n " Тактовая частота — "
+lscpu | grep 'Имя модели' | awk '{print $8}'
+
+echo -n " Количество ядер — "
+lscpu | grep 'Ядер на сокет' | awk '{print $4}'
+
+echo -n " Количество потоков на одно ядро — "
+lscpu | grep 'Потоков на' | awk '{print $4}'
+
+
+echo "Оперативная память:"
+echo -n " Всего — "
+free -m | awk 'NR == 2 {print $2}'
+
+echo -n " Доступно — "
+free -m | awk 'NR == 2 {print $4}'
+
+
+echo "Жесткий диск:"
+echo -n " Всего — "
+df --total --all --si | awk 'END{print $2}'
+
+echo -n " Доступно — "
+df --total --all --si | awk 'END{print $4}'
+
+echo -n " Смонтировано в корневую директорию — "
+df --total --all --si | awk 'END{print $5}'
+
+echo -n " SWAP всего — "
+free -m | awk 'END{print $2}'
+
+echo -n " SWAP доступно — "
+free -m | awk 'END{print $4}'
+
+
+echo "Сетевые интерфейсы:"
+count=$(ip address | grep 'qlen' | wc -l)
+echo " Количество сетевых интерфейсов — $count"
+echo
+
+for i in $(seq 1 "$count")
+do
+echo -n " Имя сетевого интерфейса №$i: "
+ip address show | grep 'qlen' | awk -v i=$i 'NR == i {print $2}'
+
+echo -n " MAC адрес №$i: "
+ip link | grep 'link' | awk -v i=$i 'NR == i {print $2}'
+
+echo -n " IP адрес №$i: "
+ip address show | grep 'inet' | awk -v i=$i 'NR == i {print $2}'
+
+echo -n " Скорость соединения №$i: "
+ip address show | grep 'qlen' | awk -v i=$i 'NR == i {print $13}'
+echo
+done
