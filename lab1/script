@@ -58,16 +58,16 @@ echo
 
 for i in $(seq 1 "$count")
 do
-echo -n " Имя сетевого интерфейса №$i: "
-ip address show | grep 'qlen' | awk -v i=$i 'NR == i {print $2}'
+nameDevice=$(ip address | grep 'qlen' | awk -v i=$i 'NR == i {print $2}')
+echo " Имя сетевого интерфейса №$i: $nameDevice"
 
-echo -n " MAC адрес №$i: "
-ip link | grep 'link' | awk -v i=$i 'NR == i {print $2}'
+macAddr=$(ip address show $nameDevice | grep 'link/' | awk '{print $2}')
+echo " MAC адрес №$i: $macAddr"
 
-echo -n " IP адрес №$i: "
-ip address show | grep 'inet' | awk -v i=$i 'NR == i {print $2}'
+ipAddr=$(ip address show $nameDevice | grep 'inet ' | awk '{print $2}')
+echo " IP адрес №$i: $ipAddr"
 
-echo -n " Скорость соединения №$i: "
-ip address show | grep 'qlen' | awk -v i=$i 'NR == i {print $13}'
+qlen=$(ip address show $nameDevice | grep 'qlen' | awk '{print $13}')
+echo " Скорость соединения №$i: $qlen"
 echo
 done
