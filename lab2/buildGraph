@@ -1,0 +1,28 @@
+#!/bin/bash
+
+filename=graph/data.dat
+
+> $filename
+
+count=10
+for i in $(seq 1 "$count")
+do
+
+row=$i
+echo -n "$i " >> $filename
+
+var=$(cat result.csv | awk -F";" -v row=$row 'NR==row {print $NF}')
+echo -n "$var " >> $filename
+
+for j in $(seq 1 3)
+do
+
+row=$(($row + 10))
+var=$(cat result.csv | awk -F";" -v row=$row 'NR==row {print $NF}')
+echo -n "$var " >> $filename
+
+done
+
+echo "" >> $filename
+
+done

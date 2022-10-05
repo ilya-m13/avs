@@ -1,0 +1,26 @@
+#!/bin/bash
+
+filename=result.csv
+
+# > $filename
+
+modelCPU=$(lscpu | grep "Имя модели:" | awk '{print $3, $4, $5}');
+out=$(./build/release/bin/app --dgemm 10)
+opt=$(cat CMakeLists.txt | grep 'target_compile_options' | awk '{print $4}')
+opt=${opt:1:2}
+if [ -z "${opt}" ]
+then
+    opt=";None"
+else
+    opt=";$opt"
+fi
+count=$(echo "$out" | wc -l)
+
+for i in $(seq 1 "$count")
+do
+
+echo -n "\"$modelCPU\"" >> $filename
+echo -n "$opt" >> $filename
+echo "$out" | awk NR==$i >> $filename
+
+done
